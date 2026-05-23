@@ -31,55 +31,69 @@ Traffic Sign Recognition (TSR) is a critical component of Advanced Driver Assist
 
 ## 📊 Dataset
 
-- **Name:** German Traffic Sign Recognition Benchmark (GTSRB)
-- **Source:** Institut für Neuroinformatik, Ruhr-Universität Bochum
-- **Total Images:** 51,839
+The project uses the **German Traffic Sign Recognition Benchmark (GTSRB)**, sourced from the Institut für Neuroinformatik, Ruhr-Universität Bochum.
+
+| Split | Number of Images |
+|-------|-----------------|
+| **Training Set** | ~34,799 |
+| **Validation Set** | ~4,410 |
+| **Test Set** | ~12,630 |
+| **Total** | **~51,839** |
+
+- **Number of Classes:** 43 (IDs 0–42)
 - **Image Size:** 32 × 32 pixels
-- **Number of Classes:** 43
-- **Data Splits:** Training, Validation, and Testing sets (pickled format: `train.p`, `valid.p`, `test.p`)
+- **Initial Format:** RGB (3 color channels)
+- **Data Source:** Pickled files (`train.p`, `valid.p`, `test.p`) obtained by cloning a Git repository
 
 ---
 
 ## 🔧 Methodology
 
-### 1. Data Loading
-Images are loaded from pickled files containing pre-organized training, validation, and test sets.
+The system follows an end-to-end pipeline with the following stages:
 
-### 2. Data Preprocessing
-- **Grayscale Conversion:** RGB images are converted to grayscale to reduce computational complexity.
-- **Histogram Equalization:** Enhances contrast and improves feature visibility under varying lighting conditions.
-- **Normalization:** Pixel values are scaled to the range [0, 1] by dividing by 255.
+### 1. Data Loading
+Images and labels are loaded from pickled files (`train.p`, `valid.p`, `test.p`) containing `X_train`, `X_val`, `X_test` (images) and `y_train`, `y_val`, `y_test` (labels).
+
+### 2. Data Visualization
+- **Sign Name Mapping:** A `signnames.csv` file is loaded to map class IDs (0–42) to human-readable traffic sign names.
+- **Sample Display:** Random images from each of the 43 classes are displayed to provide a visual overview.
+- **Distribution Analysis:** A bar chart is generated to show the distribution of samples across all 43 classes, highlighting potential class imbalances.
+
+### 3. Data Preprocessing
+- **Grayscale Conversion:** All images are converted from RGB to grayscale using `cv2.cvtColor`. This reduces dimensionality and is effective where shape/texture matters more than color.
+- **Histogram Equalization:** `cv2.equalizeHist` is applied to enhance contrast, making features more discernible.
+- **Normalization:** Pixel values are scaled to the range [0, 1] by dividing by 255, stabilizing training and speeding up convergence.
 - **Reshaping:** Images are reshaped to `(32, 32, 1)` to match the CNN input requirements.
 
-### 3. Data Augmentation
+### 4. Data Augmentation
 To improve model generalization and prevent overfitting, `ImageDataGenerator` is applied with:
-- Random shifts
+- Random width/height shifts
 - Zooms
 - Shears
 - Rotations
 
-### 4. Label Encoding
+### 5. Label Encoding
 Categorical labels are converted to one-hot encoded vectors using `to_categorical`.
 
 ---
 
 ## 🏗️ CNN Architecture
 
-The model follows a standard convolutional neural network architecture optimized for image classification:
+The Sequential CNN architecture consists of **378,023 total trainable parameters**.
 
-| Layer | Type | Filters / Units | Kernel Size | Activation |
-|-------|------|----------------|-------------|------------|
-| 1 | Conv2D | 60 | 5×5 | ReLU |
-| 2 | Conv2D | 60 | 5×5 | ReLU |
-| 3 | MaxPooling2D | — | 2×2 | — |
-| 4 | Conv2D | 30 | 3×3 | ReLU |
-| 5 | Conv2D | 30 | 3×3 | ReLU |
-| 6 | MaxPooling2D | — | 2×2 | — |
-| 7 | Dropout | — | — | Rate: 0.5 |
-| 8 | Flatten | — | — | — |
-| 9 | Dense | 500 | — | ReLU |
-| 10 | Dropout | — | — | Rate: 0.5 |
-| 11 | Dense | 43 | — | Softmax |
+| Layer | Type | Filters / Units | Kernel Size | Activation | Notes |
+|-------|------|----------------|-------------|------------|-------|
+| 1 | Conv2D | 60 | 5×5 | ReLU | Input shape: (32, 32, 1) |
+| 2 | Conv2D | 60 | 5×5 | ReLU | — |
+| 3 | MaxPooling2D | — | 2×2 | — | — |
+| 4 | Conv2D | 30 | 3×3 | ReLU | — |
+| 5 | Conv2D | 30 | 3×3 | ReLU | — |
+| 6 | MaxPooling2D | — | 2×2 | — | — |
+| 7 | Dropout | — | — | — | Rate: 0.5 |
+| 8 | Flatten | — | — | — | — |
+| 9 | Dense | 500 | — | ReLU | Hidden fully connected layer |
+| 10 | Dropout | — | — | — | Rate: 0.5 |
+| 11 | Dense | 43 | — | Softmax | Output layer (43 classes) |
 
 **Optimizer:** Adam (Learning Rate = 0.001)
 **Loss Function:** Categorical Cross-Entropy
@@ -130,20 +144,32 @@ def neural_model():
 
 ## 📈 Results
 
+### Training Performance
+The model was trained for **10 epochs** with validation performed at each epoch.
+
 | Metric | Value |
 |--------|-------|
-| **Validation Accuracy** | ~97.96% (after 10 epochs) |
-| **Test Set Accuracy** | **95.07%** |
+| **Final Validation Accuracy** | **97.96%** |
+| **Final Validation Loss** | **0.0807** |
 | **Number of Epochs** | 10 |
-| **Number of Classes** | 43 |
+| **Total Trainable Parameters** | **378,023** |
 
-The model successfully demonstrated its ability to generalize to unseen test data. Custom prediction tests confirmed accurate classification — for example, a test image was correctly identified as **"Turn left ahead" (ID 34)**.
+### Test Set Evaluation
+The model was evaluated on the held-out test set of ~12,630 images.
+
+| Metric | Value |
+|--------|-------|
+| **Test Accuracy** | **95.07%** |
+| **Test Loss** | **0.1731** |
+
+### Custom Image Prediction
+The model was tested on a real-world image (downloaded from URL), which was preprocessed and fed into the trained model. It correctly identified the sign as **"Turn left ahead" (Class ID: 34)**.
 
 ---
 
 ## 🏁 Conclusion
 
-The study validates that Deep Learning architectures, particularly Convolutional Neural Networks, are highly effective for computer vision tasks in automotive safety. The CNN model effectively classifies traffic signs by extracting spatial features through convolutional layers and maintains robustness against variations via image augmentation and dropout regularization. This project provides a robust pathway for real-world traffic sign recognition in autonomous driving systems.
+The study confirms that Deep Learning architectures, particularly Convolutional Neural Networks, are highly effective for computer vision tasks in automotive safety. The CNN model successfully generalizes to unseen test data, demonstrating robustness through hierarchical feature extraction, image augmentation, and dropout regularization. This project provides a robust, reproducible pathway for real-world traffic sign recognition in autonomous driving systems.
 
 ---
 
@@ -156,9 +182,9 @@ The study validates that Deep Learning architectures, particularly Convolutional
 
 ## 📚 References
 
-1. Stallkamp, J., Schlipsing, M., Salmen, J., & Igel, C. (2011). The German Traffic Sign Recognition Benchmark. *Institut für Neuroinformatik, Ruhr-Universität Bochum, Germany.*
-2. TensorFlow Documentation. (2024). *TensorFlow: Large-Scale Machine Learning on Heterogeneous Systems.*
-3. Goodfellow, I., Bengio, Y., & Courville, A. (2016). *Deep Learning.* MIT Press.
+1. Stallkamp, J., Schlipsing, M., Salmen, J., & Igel, C. (2011). *The German Traffic Sign Recognition Benchmark*. Institut für Neuroinformatik, Ruhr-Universität Bochum, Germany.
+2. TensorFlow Documentation. (2024). *TensorFlow: Large-Scale Machine Learning on Heterogeneous Systems*. https://www.tensorflow.org
+3. Goodfellow, I., Bengio, Y., & Courville, A. (2016). *Deep Learning*. MIT Press.
 
 ---
 
