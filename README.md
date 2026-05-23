@@ -1,6 +1,6 @@
 # 🚦 Automated Traffic Sign Recognition System using Convolutional Neural Networks (CNN)
 
-> **Deep Learning Application Case Study for Autonomous Vehicles**
+> **Developed as part of the MLSAVA Case Study at GITAM University**
 
 ---
 
@@ -173,13 +173,6 @@ The study confirms that Deep Learning architectures, particularly Convolutional 
 
 ---
 
-## 🔗 Links
-
-- **Google Colab Notebook:** [Open on Colab](https://colab.research.google.com/drive/1NOomop4358GWzHPwfR7P4RsiGE_tK5Qm?usp=sharing)
-- **GTSRB Dataset:** [Official Source](https://hci.iwr.uni-heidelberg.de/content/bosch-traffic-sign-dataset)
-
----
-
 ## 📚 References
 
 1. Stallkamp, J., Schlipsing, M., Salmen, J., & Igel, C. (2011). *The German Traffic Sign Recognition Benchmark*. Institut für Neuroinformatik, Ruhr-Universität Bochum, Germany.
@@ -187,5 +180,10 @@ The study confirms that Deep Learning architectures, particularly Convolutional 
 3. Goodfellow, I., Bengio, Y., & Courville, A. (2016). *Deep Learning*. MIT Press.
 
 ---
+## 📚 Deep learning Case Study
+This project was developed as part of the **Deep Learning** case study at **GITAM University, Visakhapatnam**. The case study required implementing a complete computer vision pipeline for real-time object detection, tracking, and counting on video streams.
+**Google Colab Notebook:** [Open on Colab](https://colab.research.google.com/drive/1NOomop4358GWzHPwfR7P4RsiGE_tK5Qm?usp=sharing)
 
-> **Built with ❤️ using Python, TensorFlow & Keras**
+<p align="center">
+Made with ❤️ by <strong>V. Ashish Nadh</strong> | <a href="https://github.com/Ashish3692003">View my GitHub</a>
+</p>
