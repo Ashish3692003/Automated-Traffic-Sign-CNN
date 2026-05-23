@@ -1,6 +1,6 @@
 # 🚦 Automated Traffic Sign Recognition System using Convolutional Neural Networks (CNN)
 
-> **Developed as part of the MLSAVA Case Study at GITAM University**
+> **Developed as part of the Deep Learning Case Study at GITAM University**
 
 ---
 
