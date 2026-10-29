@@ -105,38 +105,52 @@ The Sequential CNN architecture consists of **378,023 total trainable parameters
 
 ### Key Imports
 ```python
-import numpy as np
-import matplotlib.pyplot as plt
-import cv2
-from sklearn.model_selection import train_test_split
-import os
-import pandas as pd
-import random
 import pickle
+import random
+import requests
+from PIL import Image
 
+import cv2
+import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
+
+from tensorflow.keras.layers import Conv2D, Dense, Dropout, Flatten, Input, MaxPooling2D
 from tensorflow.keras.models import Sequential
-from tensorflow.keras.layers import Conv2D, MaxPooling2D, Dropout, Flatten, Dense
 from tensorflow.keras.optimizers import Adam
-from tensorflow.keras.utils import to_categorical
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
+from tensorflow.keras.utils import to_categorical
 ```
 
 ### Model Definition
 ```python
 def neural_model():
-    model = Sequential()
-    model.add(Conv2D(60, (5, 5), input_shape=(32, 32, 1), activation='relu'))
-    model.add(Conv2D(60, (5, 5), activation='relu'))
-    model.add(MaxPooling2D(pool_size=(2, 2)))
-    model.add(Conv2D(30, (3, 3), activation='relu'))
-    model.add(Conv2D(30, (3, 3), activation='relu'))
-    model.add(MaxPooling2D(pool_size=(2, 2)))
-    model.add(Dropout(0.5))
-    model.add(Flatten())
-    model.add(Dense(500, activation='relu'))
-    model.add(Dropout(0.5))
-    model.add(Dense(43, activation='softmax'))
-    model.compile(optimizer=Adam(learning_rate=0.001), loss='categorical_crossentropy', metrics=['accuracy'])
+    model = Sequential([
+        Input(shape=(32, 32, 1)),
+        
+        # Block 1: Low-level spatial feature extraction
+        Conv2D(60, (5, 5), activation='relu'),
+        Conv2D(60, (5, 5), activation='relu'),
+        MaxPooling2D(pool_size=(2, 2)),
+        
+        # Block 2: High-level pattern extraction
+        Conv2D(30, (3, 3), activation='relu'),
+        Conv2D(30, (3, 3), activation='relu'),
+        MaxPooling2D(pool_size=(2, 2)),
+        Dropout(0.5),
+        
+        # Block 3: Dense classifier
+        Flatten(),
+        Dense(500, activation='relu'),
+        Dropout(0.5),
+        Dense(43, activation='softmax')
+    ])
+    
+    model.compile(
+        optimizer=Adam(learning_rate=0.001),
+        loss='categorical_crossentropy',
+        metrics=['accuracy']
+    )
     return model
 ```
 
@@ -144,26 +158,33 @@ def neural_model():
 
 ## 📈 Results
 
-### Training Performance
-The model was trained for **10 epochs** with validation performed at each epoch.
+## Training Performance
+
+The model was trained for **10 epochs** using real-time data augmentation (`ImageDataGenerator`) with validation tracked at every epoch.
 
 | Metric | Value |
-|--------|-------|
-| **Final Validation Accuracy** | **97.96%** |
-| **Final Validation Loss** | **0.0807** |
+| :--- | :--- |
+| **Final Validation Accuracy** | **98.66%** |
+| **Final Validation Loss** | **0.0416** |
 | **Number of Epochs** | 10 |
 | **Total Trainable Parameters** | **378,023** |
 
-### Test Set Evaluation
-The model was evaluated on the held-out test set of ~12,630 images.
+## Test Set Evaluation
 
-| Metric | Value |
-|--------|-------|
-| **Test Accuracy** | **95.07%** |
-| **Test Loss** | **0.1731** |
+The model was evaluated on the held-out test split of 12,630 unseen images.
+
+| Metric | Previous Run | Optimized Pipeline (Current) |
+| :--- | :--- | :--- |
+| **Test Accuracy** | 95.07% | **96.84%** |
+| **Test Loss** | 0.1731 | **0.1219** |
 
 ### Custom Image Prediction
-The model was tested on a real-world image (downloaded from URL), which was preprocessed and fed into the trained model. It correctly identified the sign as **"Turn left ahead" (Class ID: 34)**.
+## Custom Image Prediction
+
+The model was validated against an external real-world stock photo (`Turn left ahead`). To mimic a realistic camera detection pipeline, the sign region was isolated from watermark margins, resized to 32×32, equalized, and normalized. 
+
+* **Predicted Class:** `Turn left ahead` (Class ID: 34)
+* **Confidence:** High (>90%)
 
 ---
 
