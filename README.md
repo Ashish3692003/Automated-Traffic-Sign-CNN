@@ -116,7 +116,7 @@ The pipeline was stress-tested against an uncurated external stock photograph (*
 
 ### 1. Interactive Google Colab
 Run the complete training, evaluation, and test suite directly in the cloud:
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1NOomop4358GWzHPwfR7P4RsiGE_tK5Qm?usp=sharing)
+[Open In Colab](https://colab.research.google.com/drive/1NOomop4358GWzHPwfR7P4RsiGE_tK5Qm?usp=sharing)
 
 ### 2. Local Setup
 
