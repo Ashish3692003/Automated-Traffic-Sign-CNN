@@ -18,32 +18,78 @@ This solution pairs an adaptive computer vision preprocessing pipeline with an 1
 
 ## 🏗️ End-to-End Pipeline Architecture
 
-```
-Raw Camera Feed (32×32×3 RGB)
-           │
-           ▼
-[Stage 1: Illumination-Invariant Preprocessing]
-  ├── Grayscale Conversion   ──► Drops 3 channels to 1 (66% memory reduction)
-  ├── Histogram Equalization ──► Normalizes contrast across extreme lighting
-  └── Min-Max Normalization  ──► Scales pixel values to [0, 1] for stable gradients
-           │
-           ▼
-[Stage 2: Dynamic Data Augmentation]
-  └── Stochastic Transformations: ±10° rotation, 10% translation, 20% zoom, 10% shear
-           │
-           ▼
-[Stage 3: Deep Feature Extraction]
-  ├── Block 1: 2× Conv2D (60 filters, 5×5) + MaxPool (2×2) ──► Low-level edges & contours
-  ├── Block 2: 2× Conv2D (30 filters, 3×3) + MaxPool (2×2) ──► Geometric shape synthesis
-  └── Regularization: Spatial Dropout (0.5)
-           │
-           ▼
-[Stage 4: Dense Classifier & Decision Logic]
-  ├── Dense (500 units, ReLU) + Dropout (0.5)
-  └── Dense Softmax Layer (43 Output Classes)
-           │
-           ▼
-[Stage 5: Validated Real-World Classification]
+```mermaid
+flowchart TD
+    %% Styling Classes
+    classDef io fill:#e3f2fd,stroke:#1565c0,stroke-width:2px,color:#0d47a1;
+    classDef prep fill:#fff3e0,stroke:#e65100,stroke-width:1.5px,color:#bf360c;
+    classDef cnn fill:#f3e5f5,stroke:#7b1fa2,stroke-width:1.5px,color:#4a148c;
+    classDef dense fill:#e8f5e9,stroke:#2e7d32,stroke-width:1.5px,color:#1b5e20;
+    classDef out fill:#fbe9e7,stroke:#c62828,stroke-width:2px,color:#b71c1c;
+
+    %% Ingestion Stage
+    subgraph S1 ["1. Sensor Frame Ingestion"]
+        A["Input Image / Video Frame<br/>(32 × 32 × 3 RGB)"]:::io
+    end
+
+    %% Preprocessing Pipeline
+    subgraph S2 ["2. Deterministic Preprocessing Pipeline"]
+        B["Grayscale Conversion<br/><code>cv2.cvtColor</code> → (32 × 32 × 1)"]:::prep
+        C["Contrast Normalization<br/><code>cv2.equalizeHist</code>"]:::prep
+        D["Statistical Scaling<br/>Min-Max Normalization [0.0, 1.0]"]:::prep
+    end
+
+    %% Training Augmentation Stage
+    subgraph S3 ["3. Dynamic Data Augmentation (Training)"]
+        E["<code>ImageDataGenerator</code><br/>±10° Rotation | 10% Shift | 20% Zoom | 10% Shear"]:::prep
+    end
+
+    %% CNN Feature Extraction
+    subgraph S4 ["4. Deep Convolutional Feature Extractor"]
+        subgraph B1 ["Feature Block 1 (Edges & Contours)"]
+            F["Conv2D (60 filters, 5×5, ReLU)<br/>Output: 28 × 28 × 60"]:::cnn
+            G["Conv2D (60 filters, 5×5, ReLU)<br/>Output: 24 × 24 × 60"]:::cnn
+            H["MaxPooling2D (2×2 pool)<br/>Output: 12 × 12 × 60"]:::cnn
+        end
+        subgraph B2 ["Feature Block 2 (Geometric Patterns)"]
+            I["Conv2D (30 filters, 3×3, ReLU)<br/>Output: 10 × 10 × 30"]:::cnn
+            J["Conv2D (30 filters, 3×3, ReLU)<br/>Output: 8 × 8 × 30"]:::cnn
+            K["MaxPooling2D (2×2 pool)<br/>Output: 4 × 4 × 30"]:::cnn
+            L["Spatial Dropout (Rate = 0.5)"]:::cnn
+        end
+    end
+
+    %% Dense Classifier
+    subgraph S5 ["5. Dense Classification Head"]
+        M["Flatten Layer<br/>(480 Units)"]:::dense
+        N["Fully Connected Dense<br/>(500 Units, ReLU)"]:::dense
+        O["Dense Dropout (Rate = 0.5)"]:::dense
+        P["Softmax Output Layer<br/>(43 Class Probability Distribution)"]:::dense
+    end
+
+    %% Output Stage
+    subgraph S6 ["6. Perception Output (ADAS)"]
+        Q["Class ID (0–42)<br/>Traffic Sign Label & Confidence (%)"]:::out
+    end
+
+    %% Connections
+    A --> B
+    B --> C
+    C --> D
+    D -.->|Training Phase| E
+    E -.->|Augmented Batches| F
+    D -->|Real-Time Inference| F
+    F --> G
+    G --> H
+    H --> I
+    I --> J
+    J --> K
+    K --> L
+    L --> M
+    M --> N
+    N --> O
+    O --> P
+    P --> Q
 ```
 
 ---
