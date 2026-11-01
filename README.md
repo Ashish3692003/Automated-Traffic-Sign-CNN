@@ -157,3 +157,11 @@ def preprocess_image(img):
 * [ ] **Upstream Object Detection:** Integrate YOLOv8/v9 to detect and crop bounding-box ROIs from raw $1080\text{p}/4\text{K}$ automotive video streams.
 * [ ] **Edge Hardware Quantization:** Convert model to **TensorFlow Lite (TFLite)** and **TensorRT** with INT8 post-training quantization for deployment on embedded NPUs, NVIDIA Jetson, and automotive FPGA accelerators.
 * [ ] **Temporal Consensus:** Implement multi-frame majority voting across successive video frames to eliminate single-frame transient false positives.
+---
+## Project details
+Project Document: [Automatic_TrafficSign_CNN](https://docs.google.com/document/d/1LEmtFMicuw9N9HQVssQ0dTs35cZ0WkiyP8VsKeblK5k/edit?usp=sharing) | 
+Project Google Colab: [Google colab Notebook](https://colab.research.google.com/drive/1NOomop4358GWzHPwfR7P4RsiGE_tK5Qm?usp=sharing)
+
+---
+## 8. Author 
+* **Ashish Nadh Varri** - [LinkedIn Profile](https://www.linkedin.com/in/ashishnadhvarri) • [GitHub](https://github.com/Ashish3692003)
